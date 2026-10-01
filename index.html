@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>dwater</title>
+<meta name="description" content="Reminder de apa, cu notificari pe iPhone.">
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#ffe3ef">
+<meta name="color-scheme" content="light">
+
+<!-- iOS home screen app -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="dwater">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-view="loading">
+
+<div class="blobs" aria-hidden="true">
+  <span class="blob b1"></span>
+  <span class="blob b2"></span>
+  <span class="blob b3"></span>
+</div>
+
+<svg width="0" height="0" class="sprite" aria-hidden="true">
+  <defs>
+    <path id="drop-path" d="M50 6C50 6 88 52 88 76a38 38 0 0 1-76 0C12 52 50 6 50 6Z"/>
+    <linearGradient id="water-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffb3d2"/>
+      <stop offset="1" stop-color="#f5588f"/>
+    </linearGradient>
+    <linearGradient id="shell-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd9e8"/>
+      <stop offset="1" stop-color="#ffc0db"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<main class="app">
+
+  <header class="top">
+    <div class="brand">
+      <svg class="brand-drop" viewBox="0 0 100 120" aria-hidden="true">
+        <use href="#drop-path" fill="url(#water-grad)"/>
+      </svg>
+      <span>dwater</span>
+    </div>
+    <div class="clock" id="clock"></div>
+  </header>
+
+  <!-- main view -->
+  <section class="view view-ready">
+    <div class="drop-wrap">
+      <svg class="drop" viewBox="0 0 100 120" role="img" aria-labelledby="drop-label">
+        <title id="drop-label">Progresul de astazi</title>
+        <use href="#drop-path" fill="url(#shell-grad)"/>
+        <clipPath id="drop-clip"><use href="#drop-path"/></clipPath>
+        <g clip-path="url(#drop-clip)">
+          <g class="water" id="water">
+            <path class="wave wave-a" d="M0 8q12.5-8 25 0t25 0t25 0t25 0t25 0t25 0t25 0t25 0V200H0Z" fill="url(#water-grad)"/>
+            <path class="wave wave-b" d="M0 10q12.5 8 25 0t25 0t25 0t25 0t25 0t25 0t25 0t25 0V200H0Z" fill="url(#water-grad)" opacity=".55"/>
+          </g>
+        </g>
+        <use href="#drop-path" fill="none" stroke="#ffffff" stroke-width="3" opacity=".9"/>
+      </svg>
+      <div class="drop-count">
+        <strong id="count">0</strong>
+        <span id="goal">din 7</span>
+      </div>
+      <div class="hearts" id="hearts" aria-hidden="true"></div>
+    </div>
+
+    <p class="status-line" id="statusLine">&nbsp;</p>
+
+    <button class="drink" id="drink" type="button">
+      <span class="drink-label">Am băut un pahar</span>
+      <span class="drink-heart">💗</span>
+    </button>
+
+    <div class="glasses" id="glasses" aria-hidden="true"></div>
+
+    <div class="card today-card">
+      <h2>Astăzi</h2>
+      <ol class="timeline" id="timeline"></ol>
+      <p class="extras" id="extras"></p>
+    </div>
+
+    <div class="card week-card">
+      <h2>Ultimele 7 zile</h2>
+      <div class="week" id="week"></div>
+    </div>
+  </section>
+
+  <!-- install on home screen first (iOS needs this for notifications) -->
+  <section class="view view-install">
+    <div class="card install-card">
+      <div class="big-emoji">📲</div>
+      <h2>Adaugă aplicația pe ecranul principal</h2>
+      <p>Pe iPhone, notificările funcționează doar dacă aplicația e pe ecranul principal.</p>
+      <ol>
+        <li>Apasă butonul <strong>Share</strong> în Safari (pătratul cu săgeata în sus).</li>
+        <li>Alege <strong>Add to Home Screen</strong> / <strong>Adaugă la ecran principal</strong>.</li>
+        <li>Deschide <strong>dwater</strong> de pe ecranul principal.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ask for notification permission -->
+  <section class="view view-enable">
+    <div class="card install-card">
+      <div class="big-emoji">🔔</div>
+      <h2>Pornește notificările</h2>
+      <p>O notificare la fiecare 2 ore și jumătate, cu reamintire din 5 în 5 minute până bifezi că ai băut. Noaptea, între 23:00 și 07:00, e liniște.</p>
+      <button class="primary" id="enable" type="button">Pornește notificările</button>
+      <p class="hint" id="enableHint"></p>
+    </div>
+  </section>
+
+  <!-- notifications were blocked in iOS settings -->
+  <section class="view view-blocked">
+    <div class="card install-card">
+      <div class="big-emoji">🤫</div>
+      <h2>Notificările sunt blocate</h2>
+      <p>Deschide <strong>Setări → Notificări → dwater</strong> pe iPhone și pornește <strong>Allow Notifications</strong>, apoi revino aici.</p>
+      <button class="ghost" id="recheck" type="button">Am pornit, verifică din nou</button>
+    </div>
+  </section>
+
+  <!-- something went wrong -->
+  <section class="view view-error">
+    <div class="card install-card">
+      <div class="big-emoji">💔</div>
+      <h2>Nu reușesc să mă conectez</h2>
+      <p class="hint" id="errorText"></p>
+      <button class="ghost" id="retry" type="button">Încearcă din nou</button>
+    </div>
+  </section>
+
+  <section class="view view-loading">
+    <div class="spinner" aria-label="Se încarcă"></div>
+  </section>
+
+  <footer class="bottom">
+    <details class="settings">
+      <summary>Setări și diagnostic</summary>
+      <dl id="diag"></dl>
+      <div class="settings-actions">
+        <button class="ghost small" id="testPush" type="button">Trimite o notificare de test</button>
+        <button class="ghost small" id="refresh" type="button">Reîncarcă</button>
+      </div>
+    </details>
+  </footer>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

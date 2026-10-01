@@ -1,0 +1,17 @@
+{
+  "name": "dwater",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Water reminder PWA with iOS web push, hosted on GitHub Pages",
+  "scripts": {
+    "test": "node supabase/functions/water/push.test.mjs",
+    "icons": "node tools/make-icons.mjs",
+    "bundle": "node tools/bundle.mjs",
+    "keys": "node tools/new-keys.mjs",
+    "serve": "node tools/serve.mjs"
+  },
+  "devDependencies": {
+    "web-push": "^3.6.7"
+  }
+}

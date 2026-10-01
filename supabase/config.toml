@@ -1,0 +1,6 @@
+project_id = "dwater"
+
+# The app calls this function with its own x-app-token, and pg_cron with
+# x-cron-token, so Supabase JWT verification would only get in the way.
+[functions.water]
+verify_jwt = false
