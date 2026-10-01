@@ -2,10 +2,10 @@
 -- this particular minute deserves a notification, which keeps all the
 -- schedule and quiet-hours logic in one place.
 --
--- BEFORE RUNNING: replace the two placeholders below.
---   PROJECT_REF  the subdomain of your Supabase project
---                (dashboard URL: /project/<PROJECT_REF>)
---   CRON_TOKEN   the value you set as the CRON_TOKEN function secret
+-- BEFORE RUNNING: replace CRON_TOKEN below with the value set as the
+-- CRON_TOKEN function secret. It stays a placeholder in this file on purpose,
+-- because this file is public - the filled-in version to paste into the SQL
+-- Editor is in SECRETE.local.md, which git ignores.
 
 create extension if not exists pg_net;
 create extension if not exists pg_cron;
@@ -19,7 +19,7 @@ select cron.schedule(
   '* * * * *',
   $job$
   select net.http_post(
-    url     := 'https://PROJECT_REF.supabase.co/functions/v1/water/tick',
+    url     := 'https://bhijmycooghocnjjwmdc.supabase.co/functions/v1/water/tick',
     headers := jsonb_build_object(
                  'Content-Type', 'application/json',
                  'x-cron-token', 'CRON_TOKEN'
